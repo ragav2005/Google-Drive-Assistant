@@ -4,7 +4,7 @@ Turn your WhatsApp chat into a command console for Google Drive. This n8n workfl
 
 ---
 
-## 🚀 What This Is
+##  What This Is
 An event-driven automation (n8n workflow) that:
 1. Listens for incoming WhatsApp messages (Cloud API)
 2. Parses commands from message text (custom JavaScript)
@@ -17,7 +17,7 @@ Use it to remotely manage files hands‑free while on the go, without opening th
 
 ---
 
-## ✨ Features
+##  Features
 - Chat-Based File Management (LIST / DELETE / MOVE / RENAME / UPLOAD)
 - AI-Powered Folder Summaries (concise bullet points for each document)
 - Multi-step parsing & validation of user input
@@ -28,7 +28,7 @@ Use it to remotely manage files hands‑free while on the go, without opening th
 
 ---
 
-## 🧠 Supported Commands
+##  Supported Commands
 Arguments are separated by `/`. Folded examples show expected syntax.
 
 | Command | Syntax | Example | Description |
@@ -47,7 +47,7 @@ Notes:
 
 ---
 
-## ⚙️ Workflow Architecture
+##  Workflow Architecture
 
 High-level flow (simplified):
 
@@ -73,7 +73,7 @@ Key node groups (refer to `workflow.json`):
 
 ---
 
-## 🛡️ Security & Hardening
+##  Security & Hardening
 | Concern | Current State | Recommendation |
 |---------|---------------|----------------|
 | Hardcoded recipient number | Present in Send message node | Replace with expression: `={{ $('WhatsApp Trigger').item.json.messages[0].from }}` |
@@ -90,7 +90,7 @@ Additional suggestions:
 
 ---
 
-## 🧩 Parser Logic Details
+##  Parser Logic Details
 The parser normalizes to uppercase and scans a fixed array:
 ```
 ALL_COMMANDS = ['LIST', 'DELETE', 'MOVE', 'SUMMARY', 'RENAME', 'UPLOAD']
@@ -104,7 +104,7 @@ If parsing fails, the workflow returns a null-command structure and halts downst
 
 ---
 
-## 🔧 Prerequisites
+##  Prerequisites
 Before importing and activating:
 - An operational n8n instance (self-hosted or cloud)
 - WhatsApp Cloud API (Meta for Developers – number + token + webhook validation)
@@ -117,7 +117,7 @@ Optional: A dedicated service account + delegated domain-wide access (advanced s
 
 ---
 
-## 🔐 Required n8n Credentials
+##  Required n8n Credentials
 Create these under Credentials in n8n:
 1. WhatsApp OAuth (Trigger) – receives inbound messages
 2. WhatsApp API (Send Message & Media) – sends replies & downloads attachments
@@ -126,7 +126,7 @@ Create these under Credentials in n8n:
 
 ---
 
-## 🛠️ Setup Steps
+##  Setup Steps
 1. Import `workflow.json` into n8n
 2. Open each credential-using node and map to your stored credentials
 3. Update the WhatsApp webhook configuration (Meta dashboard) to point to n8n's public webhook URL for the Trigger node
@@ -144,7 +144,7 @@ Create these under Credentials in n8n:
 
 ---
 
-## 🧪 Testing Tips
+##  Testing Tips
 - Start with `LIST /NonExisting` to confirm graceful empty response
 - Upload test: Send a small PDF with caption `UPLOAD /TestFolder/test.pdf`
 - Rename test: `RENAME /TestFolder/test.pdf Test Renamed.pdf`
@@ -152,75 +152,3 @@ Create these under Credentials in n8n:
 
 ---
 
-## 🧵 Batching & Summaries
-The `splitInBatches` node limits how many documents are processed per loop iteration to avoid long executions or token overuse. Adjust `batchSize` depending on model latency and file sizes.
-
-Enhancement ideas:
-- Cache summaries + checksum of file to skip unchanged docs
-- Parallelize downloads before AI calls (with concurrency safeguards)
-
----
-
-## 📦 Extensibility Ideas
-| Future Command | Purpose | Implementation Sketch |
-|----------------|---------|------------------------|
-| SHARE | Return shareable link | Drive `permissions.create` + link reply |
-| COPY | Duplicate a file | Drive `copy` operation |
-| ZIP | Compress folder | Use external service + upload result |
-| HELP | List commands | Static response formatter |
-| SEARCH | Fuzzy find by name | Drive query with `name contains` filter |
-| OCR | Extract text from images | Vision API + Gemini summarization |
-
----
-
-## 🧯 Troubleshooting
-| Symptom | Likely Cause | Fix |
-|---------|--------------|-----|
-| No WhatsApp trigger | Webhook not verified / invalid URL | Re-copy webhook URL from Trigger node & re-subscribe in Meta portal |
-| Drive nodes return empty | Folder name mismatch | Confirm exact spelling / case (Drive names) |
-| Upload fails | HTTP Request auth invalid | Migrate to credential and re-authorize |
-| Gemini errors | Model name changed / quota exceeded | Verify model ID & quota in GCP |
-| MOVE does nothing | File not found in source folder | Add debug Code node to log resolved IDs |
-| SUMMARY slow | Large PDFs or many docs | Reduce batch size / add early size filter |
-
----
-
-## 📁 Repository Contents
-| File | Purpose |
-|------|---------|
-| `workflow.json` | Full n8n workflow definition |
-| `README.md` | Project documentation |
-
----
-
-## ⚖️ License
-Choose a license (e.g. MIT). Example:
-```
-MIT License – see LICENSE (add this file if distributing)
-```
-
----
-
-## ✅ Quick Reference Cheat Sheet
-```
-LIST /Folder
-DELETE /Folder/file.ext
-MOVE /SrcFolder/file.ext/DestFolder
-RENAME /Folder/old.ext New Name.ext
-UPLOAD /Folder/newfile.ext   (send with file attached)
-SUMMARY /Folder
-```
-
----
-
-## 🙌 Contributions
-PRs welcome: add commands, improve parsing, integrate caching, or add automated tests with the n8n CLI.
-
----
-
-## 📝 Disclaimer
-This workflow manipulates live Google Drive data. Test with a sandbox Drive or dedicated subfolders before enabling in production.
-
----
-
-Happy automating! If you build enhancements, consider sharing a pull request.
